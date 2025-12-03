@@ -119,15 +119,28 @@ Value Value::Catenate(const Value& oper) const {
 // string repetition
 // Repeat the LHS a RHS # of times
 Value Value::Repeat(const Value& oper) const {
-  // expects lhs number/string and rhs number only
-  if ((!this->IsNum() && !this->IsString()) || !oper.IsNum()) {
+  // expects lhs/rhs as number/string
+  if ((!this->IsNum() && !this->IsString()) ||
+      (!oper.IsNum() && !isNumericStr(oper.Stemp))) {
     return Value();
   }
 
-  string curr = "";
-  for (int i = 0; i < oper.Ntemp; i++) {
-    curr += oper.Stemp;
+  int repetitions;
+  if (oper.GetType() == VSTRING) {
+    repetitions = stoi(oper.Stemp);
+  } else if (oper.GetType() == VNUM) {
+    repetitions = oper.Ntemp;
   }
 
-  return Value(curr);
+  string currStr = "";
+  for (int i = 0; i < repetitions; i++) {
+    // Use numeric string
+    if (this->GetType() == VSTRING) {
+      currStr += this->Stemp;
+    } else if (this->GetType() == VNUM) {
+      currStr += toString(this->Ntemp);
+    }
+  }
+
+  return Value(currStr);
 }
