@@ -19,7 +19,7 @@ bool isNumericStr(string str) {
   return true;
 }
 
-// numeric multiply
+// Multiply with support for numeric coersion (Perl allows "1" * 1 = 1)
 Value Value::operator*(const Value& op) const {
   double thisValue = this->Ntemp;
   double opValue = op.Ntemp;
@@ -44,11 +44,25 @@ Value Value::operator*(const Value& op) const {
 
 // numeric less than
 Value Value::operator<(const Value& op) const {
-  // expects two numbers
-  if (!this->IsNum() || !op.IsNum()) {
-    return Value();
+  double thisValue = this->Ntemp;
+  double opValue = op.Ntemp;
+
+  // expects two numbers or string numbers
+  if (!this->IsNum() && !isNumericStr(this->Stemp) ||
+      !op.IsNum() && !isNumericStr(op.Stemp)) {
+    return Value();  // error constructor
   }
-  return Value(this->Ntemp < op.Ntemp);
+
+  // Support for multipling numeric strings
+  if (isNumericStr(this->Stemp)) {
+    thisValue = stoi(this->Stemp);
+  }
+  if (isNumericStr(op.Stemp)) {
+    opValue = stoi(op.Stemp);
+  }
+
+  // convert bc confusion between 0 and boolean for constructor
+  return Value(thisValue < opValue);
 }
 
 // string equality (-eq)
