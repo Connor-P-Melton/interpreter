@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "streambuf": "cpp",
+    "compare": "cpp",
+    "memory_resource": "cpp",
+    "format": "cpp",
+    "type_traits": "cpp",
+    "string": "cpp",
+    "vector": "cpp",
+    "cstddef": "cpp",
+    "sstream": "cpp"
+  }
+}
