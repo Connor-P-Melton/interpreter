@@ -8,7 +8,7 @@ using namespace std;
 
 bool isNumericStr(string str) {
   // Edge case
-  if (empty(str)) {
+  if (str.empty()) {
     return false;
   }
 
@@ -20,14 +20,22 @@ bool isNumericStr(string str) {
   return true;
 }
 
+// Removes trailing zeros
+string toString(double num) {
+  string str = "";
+  ostringstream ostream;
+  ostream << num;
+  return ostream.str();
+}
+
 // Multiply with support for numeric coersion (Perl allows "1" * 1 = 1)
 Value Value::operator*(const Value& op) const {
   double thisValue = this->Ntemp;
   double opValue = op.Ntemp;
 
   // expects two numbers or string numbers
-  if (!this->IsNum() && !isNumericStr(this->Stemp) ||
-      !op.IsNum() && !isNumericStr(op.Stemp)) {
+  if ((!this->IsNum() && !isNumericStr(this->Stemp)) ||
+      (!op.IsNum() && !isNumericStr(op.Stemp))) {
     return Value();  // error constructor
   }
 
@@ -49,8 +57,8 @@ Value Value::operator<(const Value& op) const {
   double opValue = op.Ntemp;
 
   // expects two numbers or string numbers
-  if (!this->IsNum() && !isNumericStr(this->Stemp) ||
-      !op.IsNum() && !isNumericStr(op.Stemp)) {
+  if ((!this->IsNum() && !isNumericStr(this->Stemp)) ||
+      (!op.IsNum() && !isNumericStr(op.Stemp))) {
     return Value();  // error constructor
   }
 
@@ -68,22 +76,44 @@ Value Value::operator<(const Value& op) const {
 
 // string equality (-eq)
 Value Value::SEQ(const Value& oper) const {
+  string thisValue = this->Stemp;
+  string operValue = oper.Stemp;
+
   // expects numbers and/or string
   if ((!this->IsNum() && !this->IsString()) ||
       (!oper.IsNum() && !oper.IsString())) {
     return Value();
   }
-  return Value(this->Ntemp == oper.Ntemp);
+
+  if (this->GetType() == VNUM) {
+    thisValue = this->Ntemp;
+  }
+  if (oper.GetType() == VNUM) {
+    operValue = oper.Ntemp;
+  }
+
+  return Value(thisValue == operValue);
 }
 
 // string concatenation
 Value Value::Catenate(const Value& oper) const {
+  string thisValue = this->Stemp;
+  string operValue = oper.Stemp;
+
   // expects numbers and/or string
   if ((!this->IsNum() && !this->IsString()) ||
       (!oper.IsNum() && !oper.IsString())) {
     return Value();
   }
-  return Value(this->Stemp + oper.Stemp);
+
+  if (this->GetType() == VNUM) {
+    thisValue = toString(this->Ntemp);
+  }
+  if (oper.GetType() == VNUM) {
+    operValue = toString(oper.Ntemp);
+  }
+
+  return Value(thisValue + operValue);
 }
 
 // string repetition
