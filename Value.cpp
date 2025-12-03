@@ -6,6 +6,11 @@
 using namespace std;
 
 bool isNumericStr(string str) {
+  // Edge case
+  if (empty(str)) {
+    return false;
+  }
+
   for (char s : str) {
     if (!isdigit(s) && s != '.') {
       return false;
@@ -16,8 +21,8 @@ bool isNumericStr(string str) {
 
 // numeric multiply
 Value Value::operator*(const Value& op) const {
-  int opValue = 0;
-  int thisValue = 0;
+  double thisValue = this->Ntemp;
+  double opValue = op.Ntemp;
 
   // expects two numbers or string numbers
   if (!this->IsNum() && !isNumericStr(this->Stemp) ||
@@ -25,16 +30,15 @@ Value Value::operator*(const Value& op) const {
     return Value();  // error constructor
   }
 
-  // Multiply the numeric strings, otherwise just numeric values
+  // Support for multipling numeric strings
   if (isNumericStr(this->Stemp)) {
     thisValue = stoi(this->Stemp);
-  } else if (isNumericStr(op.Stemp)) {
-    opValue = stoi(op.Stemp);
-  } else {
-    thisValue = this->Ntemp;
-    opValue = op.Ntemp;
   }
-  // convert bc weird 0 and boolean issue
+  if (isNumericStr(op.Stemp)) {
+    opValue = stoi(op.Stemp);
+  }
+
+  // convert bc confusion between 0 and boolean for constructor
   return Value(static_cast<double>(thisValue * opValue));
 }
 
